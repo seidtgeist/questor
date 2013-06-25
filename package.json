@@ -7,9 +7,9 @@
   "author": "Stephan Seidt <evilhackerdude@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "underscore-contrib": "~0.1.4",
+    "pacta": "~0.2.0",
     "bl": "~0.1.1",
-    "hyperquest": "~0.1.6",
-    "pacta": "~0.1.0",
-    "underscore-contrib": "~0.1.4"
+    "hyperquest": "~0.1.6"
   }
 }
