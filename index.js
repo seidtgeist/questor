@@ -9,6 +9,7 @@ var Promise = require('pacta').Promise;
 
 module.exports = questor;
 function questor(uri, options) {
+  if (!options) { options = {}; }
   var optionsWithURI = _.extend({}, url.parse(uri), options);
   var driver = optionsWithURI.protocol === 'http:' ? http : https;
   var promise = new Promise();
