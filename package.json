@@ -1,6 +1,6 @@
 {
   "name": "questor",
-  "version": "0.0.3",
+  "version": "1.0.0-alpha",
   "description": "Wrap hyperquest in promise",
   "main": "index.js",
   "repository": "git@github.com:ehd/questor.git",
