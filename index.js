@@ -4,40 +4,42 @@ var _ = require('underscore-contrib');
 var bl = require('bl');
 var http = require('http');
 var https = require('https');
+var Promise = require('bluebird');
 var url = require('url');
-var Promise = require('pacta').Promise;
 
 module.exports = questor;
 function questor(uri, options) {
   if (!options) { options = {}; }
   var optionsWithURI = _.extend({}, url.parse(uri), options);
   var driver = optionsWithURI.protocol === 'http:' ? http : https;
-  var promise = new Promise();
+  var resolver = Promise.pending();
   var request = driver.request(optionsWithURI, function(response) {
     response.pipe(bl(function(err, data) {
       var body = data.toString();
-      var value = _.extend({
-        responseText: body,
-      }, _.pick(response, 'headers', 'statusCode'));
+      var value = {
+        body: body,
+        headers: response.headers,
+        status: response.statusCode
+      };
 
       if (response.statusCode === 0) {
-        promise.reject(new Error('Network error'));
+        resolver.reject(new Error('Network error'));
         return;
       }
 
       if (response.statusCode >= 300) {
-        promise.reject(value);
+        resolver.reject(_.extend(new Error(value.body), value));
         return;
       }
 
-      promise.resolve(value);
+      resolver.fulfill(value);
     }));
   });
 
-  request.on('error', _.bound(promise, 'reject'));
+  request.on('error', _.bound(resolver, 'reject'));
 
   request.setHeader('Content-Length', options.body ? options.body.length : 0);
   request.end(options.body);
 
-  return promise;
+  return resolver.promise;
 }
