@@ -38,8 +38,10 @@ function questor(uri, options) {
 
   request.on('error', _.bound(resolver, 'reject'));
 
-  request.setHeader('Content-Length', options.body ? new Buffer(options.body).length : 0);
-  request.end(options.body);
+  var requestBody = options.body ? new Buffer(options.body) : void 0;
+  var requestBodyLength = options.body ? requestBody.length : 0;
+  request.setHeader('Content-Length', requestBodyLength);
+  request.end(requestBody);
 
   return resolver.promise;
 }
