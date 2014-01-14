@@ -1,6 +1,7 @@
 'use strict';
 
-var _ = require('underscore-contrib');
+var assign = require('lodash.assign');
+var defaults = require('lodash.defaults');
 var bl = require('bl');
 var http = require('http');
 var https = require('https');
@@ -10,10 +11,17 @@ var url = require('url');
 module.exports = questor;
 function questor(uri, options) {
   if (!options) { options = {}; }
-  var optionsWithURI = _.extend({}, url.parse(uri), options);
-  var driver = optionsWithURI.protocol === 'http:' ? http : https;
+
+  options = defaults({}, options, url.parse(uri), {
+    headers: {}
+  });
+
+  var requestBody = options.body ? new Buffer(options.body) : void 0;
+  var requestBodyLength = options.body ? requestBody.length : 0;
+  options.headers['content-length'] = requestBodyLength;
+  var driver = options.protocol === 'http:' ? http : https;
   var resolver = Promise.pending();
-  var request = driver.request(optionsWithURI, function(response) {
+  var request = driver.request(options, function(response) {
     response.pipe(bl(function(err, data) {
       var body = data.toString();
       var value = {
@@ -28,7 +36,7 @@ function questor(uri, options) {
       }
 
       if (response.statusCode >= 300) {
-        resolver.reject(_.extend(new Error(value.body), value));
+        resolver.reject(assign(new Promise.RejectionError(value.body), value));
         return;
       }
 
@@ -36,11 +44,8 @@ function questor(uri, options) {
     }));
   });
 
-  request.on('error', _.bound(resolver, 'reject'));
+  request.on('error', resolver.reject.bind(resolver));
 
-  var requestBody = options.body ? new Buffer(options.body) : void 0;
-  var requestBodyLength = options.body ? requestBody.length : 0;
-  request.setHeader('Content-Length', requestBodyLength);
   request.end(requestBody);
 
   return resolver.promise;

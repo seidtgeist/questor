@@ -1,15 +1,16 @@
 {
   "name": "questor",
   "version": "1.0.0-alpha.2",
-  "description": "Wrap hyperquest in promise",
+  "description": "Promise based HTTP client inspired by clj-http",
   "main": "index.js",
   "repository": "git@github.com:ehd/questor.git",
   "author": "Stephan Seidt <evilhackerdude@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "bl": "~0.7.0",
     "bluebird": "~0.11.6-0",
     "stream-browserify": "~0.1.2",
-    "bl": "~0.7.0",
-    "underscore-contrib": "~0.2.1"
+    "lodash.assign": "~2.4.1",
+    "lodash.defaults": "~2.4.1"
   }
 }
