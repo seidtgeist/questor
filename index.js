@@ -20,33 +20,33 @@ function questor(uri, options) {
   var requestBodyLength = options.body ? requestBody.length : 0;
   options.headers['content-length'] = requestBodyLength;
   var driver = options.protocol === 'http:' ? http : https;
-  var resolver = Promise.pending();
-  var request = driver.request(options, function(response) {
-    response.pipe(bl(function(err, data) {
-      var body = data.toString();
-      var value = {
-        body: body,
-        headers: response.headers,
-        status: response.statusCode
-      };
 
-      if (response.statusCode === 0) {
-        resolver.reject(new Error('Network error'));
-        return;
-      }
+  return new Promise(function (resolve, reject) {
+    var request = driver.request(options, function(response) {
+      response.pipe(bl(function(err, data) {
+        var body = data.toString();
+        var value = {
+          body: body,
+          headers: response.headers,
+          status: response.statusCode
+        };
 
-      if (response.statusCode >= 300) {
-        resolver.reject(assign(new Promise.RejectionError(value.body), value));
-        return;
-      }
+        if (response.statusCode === 0) {
+          reject(new Error('Network error'));
+          return;
+        }
 
-      resolver.fulfill(value);
-    }));
+        if (response.statusCode >= 300) {
+          reject(assign(new Promise.RejectionError(value.body), value));
+          return;
+        }
+
+        resolve(value);
+      }));
+    });
+
+    request.on('error', reject);
+
+    request.end(requestBody);
   });
-
-  request.on('error', resolver.reject.bind(resolver));
-
-  request.end(requestBody);
-
-  return resolver.promise;
 }
