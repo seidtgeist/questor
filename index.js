@@ -20,6 +20,7 @@ function initProxy(uri, options) {
   options.hostname = httpProxyOptions.hostname;
   options.port = httpProxyOptions.port;
   options.host = options.hostname + ':' + options.port;
+  options.auth = httpProxyOptions.auth;
   options.path = uri;
 };
 
