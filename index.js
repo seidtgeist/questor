@@ -22,7 +22,8 @@ function initProxy(uri, options) {
 
   // Proxy basic auth
   if (options.proxyUsername && options.proxyPassword) {
-    options.auth = options.proxyUsername + ':' + options.proxyPassword;
+    var auth = 'Basic ' + new Buffer(options.proxyUsername + ':' + options.proxyPassword).toString('base64');
+    options.headers['Proxy-Authorization'] = auth;
   }
 };
 
