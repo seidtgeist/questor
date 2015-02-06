@@ -8,13 +8,33 @@ var https = require('https');
 var Promise = require('bluebird');
 var url = require('url');
 
-module.exports = questor;
+function initProxy(uri, options) {
+  if (!options.proxyHost && !options.proxyPort) {
+    return;
+  }
+
+  // Handle proxy for HTTP requests
+  options.hostname = options.proxyHost;
+  options.port = options.proxyPort;
+  options.headers['Host'] = options.hostname;
+  options.host = options.hostname + ':' + options.port;
+  options.path = uri;
+
+  // Proxy basic auth
+  if (options.proxyUsername && options.proxyPassword) {
+    var auth = 'Basic ' + new Buffer(options.proxyUsername + ':' + options.proxyPassword).toString('base64');
+    options.headers['Proxy-Authorization'] = auth;
+  }
+};
+
 function questor(uri, options) {
   if (!options) { options = {}; }
 
   options = defaults({}, options, url.parse(uri), {
     headers: {}
   });
+
+  initProxy(uri, options);
 
   var requestBody = options.body ? new Buffer(options.body) : void 0;
   var requestBodyLength = options.body ? requestBody.length : 0;
@@ -50,3 +70,5 @@ function questor(uri, options) {
     request.end(requestBody);
   });
 }
+
+module.exports = questor;
