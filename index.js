@@ -9,19 +9,21 @@ var Promise = require('bluebird');
 var url = require('url');
 
 function initProxy(uri, options) {
-  if (!process.env.http_proxy) {
+  if (!options.proxyHost && !options.proxyPort) {
     return;
   }
 
   // Handle proxy for HTTP requests
-  var httpProxyOptions = url.parse(process.env.http_proxy);
-
+  options.hostname = options.proxyHost;
+  options.port = options.proxyPort;
   options.headers['Host'] = options.hostname;
-  options.hostname = httpProxyOptions.hostname;
-  options.port = httpProxyOptions.port;
   options.host = options.hostname + ':' + options.port;
-  options.auth = httpProxyOptions.auth;
   options.path = uri;
+
+  // Proxy basic auth
+  if (options.proxyUsername && options.proxyPassword) {
+    options.auth = options.proxyUsername + ':' + options.proxyPassword;
+  }
 };
 
 function questor(uri, options) {
