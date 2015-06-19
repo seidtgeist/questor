@@ -45,6 +45,12 @@ function questor(uri, options) {
       }));
     });
 
+    if ('timeout' in options) {
+      request.setTimeout(options.timeout, function () {
+        request.abort();
+      });
+    }
+
     request.on('error', reject);
 
     request.end(requestBody);
