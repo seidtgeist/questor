@@ -1,4 +1,6 @@
-# questor
+# The standard gods have spoen and you should use https://www.npmjs.com/package/isomorphic-fetch instead ¯\_(ツ)_/¯
+
+## questor
 
 Promise based HTTP client inspired by clj-http
 
