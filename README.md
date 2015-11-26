@@ -1,4 +1,4 @@
-# The standard gods have spoen and you should use https://www.npmjs.com/package/isomorphic-fetch instead ¯\_(ツ)_/¯
+# The standard gods have spoken and you should use https://www.npmjs.com/package/isomorphic-fetch instead ¯\_(ツ)_/¯
 
 ## questor
 
